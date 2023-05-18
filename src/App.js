@@ -11,6 +11,7 @@ function PostList() {
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostAuthor, setNewPostAuthor] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -36,9 +37,28 @@ function PostList() {
     handleCloseModal();
   };
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredPosts = posts.filter((post) => {
+    const searchTermWithoutWhitespace = searchTerm.trim().toLowerCase();
+    const postTitleWithoutWhitespace = post.title.trim().toLowerCase();
+    const postAuthorWithoutWhitespace = post.author.trim().toLowerCase();
+    return(
+    postTitleWithoutWhitespace.includes(searchTermWithoutWhitespace) ||
+    postAuthorWithoutWhitespace.includes(searchTermWithoutWhitespace)
+    );
+  });
+
   return (
     <VStack spacing={4} align="stretch">
-      {posts.map((post) => (
+      <Flex justify="flex-end" w="100%">
+        <FormControl w="200px" bg="#ffffff">
+          <Input placeholder="search..." value={searchTerm} onChange={handleSearch} />
+        </FormControl>
+      </Flex>
+      {filteredPosts.map((post) => (
         <PostItem key={post.id} post={post} />
       ))}
       <Button colorScheme="teal" onClick={handleOpenModal} alignSelf="flex-end">
@@ -70,7 +90,7 @@ function PostList() {
             </Button>
             <Button colorScheme="gray" ml={2} onClick={handleCloseModal}>
               취소
-              </Button>
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -146,3 +166,4 @@ function App() {
 }
 
 export default App;
+
