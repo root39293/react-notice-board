@@ -24,33 +24,31 @@ function PostList() {
   const [posts, setPosts] = useState([
     {
       id: 1,
-      title: "First Post",
+      title: "React 강좌",
       author: "John Doe",
       date: "May 18, 2023",
       content: "hello world!",
-      likes: 0,
     },
     {
       id: 2,
-      title: "Second Post",
+      title: "Vue 강좌",
       author: "Jane Smith",
       date: "May 19, 2023",
       content: "hello there",
-      likes: 0,
     },
     {
       id: 3,
-      title: "Third Post",
+      title: "Python 강좌",
       author: "Michael Johnson",
       date: "May 20, 2023",
       content: "hey!",
-      likes: 0,
     },
   ]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState("");
   const [newPostAuthor, setNewPostAuthor] = useState("");
   const [newPostContent, setNewPostContent] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -70,53 +68,41 @@ function PostList() {
       author: newPostAuthor,
       date: new Date().toLocaleDateString(),
       content: newPostContent,
-      likes: 0,
     };
 
     setPosts([...posts, newPost]);
     handleCloseModal();
   };
 
-  const handleLikePost = (postId) => {
-    const updatedPosts = posts.map((post) => {
-      if (post.id === postId) {
-        return { ...post, likes: post.likes + 1 };
-      }
-      return post;
-    });
-
-    setPosts(updatedPosts);
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
   };
+
+  const filteredPosts = posts.filter((post) => {
+    const searchTermWithoutWhitespace = searchTerm.trim().toLowerCase();
+    const postTitleWithoutWhitespace = post.title.trim().toLowerCase();
+    const postAuthorWithoutWhitespace = post.author.trim().toLowerCase();
+    return (
+      postTitleWithoutWhitespace.includes(searchTermWithoutWhitespace) ||
+      postAuthorWithoutWhitespace.includes(searchTermWithoutWhitespace)
+    );
+  });
 
   return (
     <VStack spacing={4} align="stretch">
-      {posts.map((post) => (
-        <Box
-          key={post.id}
-          p={4}
-          shadow="md"
-          borderWidth="1px"
-          borderRadius="md"
-          bg="#FFFFFF"
-        >
-          <Heading as="h3" size="md" mb={2}>
-            {post.title}
-          </Heading>
-          <Text fontSize="sm" color="gray.500" mb={2}>
-            By {post.author} on {post.date}
-          </Text>
-          <Divider />
-          <Flex justify="space-between" mt={4}>
-            <Button colorScheme="blue" onClick={() => handleLikePost(post.id)}>
-              ❤ {post.likes}
-            </Button>
-            <Button colorScheme="blue" onClick={() => handleOpenModal(post.id)}>
-              Read More
-            </Button>
-          </Flex>
-        </Box>
+      <Flex justify="flex-end" w="100%">
+        <FormControl w="200px" bg="#ffffff">
+          <Input
+            placeholder="search..."
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </FormControl>
+      </Flex>
+      {filteredPosts.map((post) => (
+        <PostItem key={post.id} post={post} />
       ))}
-      <Button colorScheme="blue" onClick={handleOpenModal} alignSelf="flex-end">
+      <Button colorScheme="teal" onClick={handleOpenModal} alignSelf="flex-end">
         글쓰기
       </Button>
 
@@ -150,7 +136,7 @@ function PostList() {
           </ModalBody>
           <ModalFooter>
             <Button
-              colorScheme="blue"
+              colorScheme="teal"
               onClick={handleAddPost}
               isDisabled={!newPostTitle || !newPostAuthor || !newPostContent}
             >
@@ -163,6 +149,61 @@ function PostList() {
         </ModalContent>
       </Modal>
     </VStack>
+  );
+}
+
+function PostItem({ post }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleLike = () => {
+    setLikeCount(likeCount + 1);
+  };
+
+  return (
+    <Box p={4} shadow="md" borderWidth="1px" borderRadius="md" bg="#FFFFFF">
+      <Heading as="h3" size="md" mb={2}>
+        {post.title}
+      </Heading>
+      <Text fontSize="sm" color="gray.500" mb={2}>
+        By {post.author} on {post.date}
+      </Text>
+      <Divider />
+      <Button colorScheme="teal" onClick={handleOpenModal} mt={2}>
+  Read More
+</Button>
+
+
+      <Flex justify="flex-end" align="center" mt={2}>
+        <Button colorScheme="teal" variant="ghost" onClick={handleLike}>
+          ❤  {likeCount}
+        </Button>
+      </Flex>
+
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{post.title}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>{post.content}</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="teal" onClick={handleCloseModal}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </Box>
   );
 }
 
@@ -181,7 +222,7 @@ function App() {
               color="black"
               fontFamily="Roboto, sans-serif"
             >
-              Board
+              Lecture
             </Heading>
             <PostList />
           </Box>
