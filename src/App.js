@@ -177,7 +177,7 @@ function PostItem({ post }) {
         By {post.author} on {post.date}
       </Text>
       <Divider />
-      <Button colorScheme="teal" onClick={handleOpenModal} mt={2}>
+      <Button colorScheme="teal" onClick={handleOpenModal} mt={50}>
   Read More
 </Button>
 
