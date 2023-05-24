@@ -36,6 +36,3 @@ The code is organized into the following files:
 
 Feel free to explore the code and make any modifications as needed.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more information.
